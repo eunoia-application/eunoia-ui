@@ -1,5 +1,6 @@
-import { Button, theme, Typography } from 'antd'
+import { Button, Flex, theme, Typography } from 'antd'
 import { motion } from 'framer-motion'
+import { Bot, Leaf, Sprout, TreePine, Waypoints } from 'lucide-react'
 import type { CSSProperties, ReactNode } from 'react'
 
 import { SignInForm } from '@features/auth-login'
@@ -19,6 +20,24 @@ interface Props {
   mode: AuthMode
   onSwitch: (mode: AuthMode) => void
 }
+
+interface OverlayItem {
+  icon: ReactNode
+  label: string
+}
+
+// «Нет сада?» — продаём регистрацию (фишки); «Уже есть сад?» — напоминаем метафору.
+const OFFER_ITEMS: OverlayItem[] = [
+  { icon: <Sprout size={16} />, label: 'Сад вместо уроков' },
+  { icon: <Leaf size={16} />, label: 'Живая память слов' },
+  { icon: <Bot size={16} />, label: 'AI-садовник рядом' },
+]
+
+const ABOUT_ITEMS: OverlayItem[] = [
+  { icon: <TreePine size={16} />, label: 'Дерево — область знаний' },
+  { icon: <Waypoints size={16} />, label: 'Ветки — ваши темы' },
+  { icon: <Leaf size={16} />, label: 'Листья — освоенные слова' },
+]
 
 // Тень адаптируется под тему: на тёмном фоне чёрная тень невидима, поэтому
 // добавляем глубину + зелёное кольцо-акцент вокруг фрейма (как в оригинале).
@@ -44,11 +63,13 @@ function FormWrap({
   title,
   subtitle,
   logo,
+  centered,
   children,
 }: {
   title: string
   subtitle: string
   logo?: boolean
+  centered?: boolean
   children: ReactNode
 }) {
   return (
@@ -77,13 +98,13 @@ function FormWrap({
       )}
       <Typography.Title
         level={3}
-        style={{ marginBottom: 8, textAlign: logo ? 'center' : undefined }}
+        style={{ marginBottom: 8, textAlign: logo || centered ? 'center' : undefined }}
       >
         {title}
       </Typography.Title>
       <Typography.Paragraph
         type="secondary"
-        style={{ marginBottom: 24, textAlign: logo ? 'center' : undefined }}
+        style={{ marginBottom: 24, textAlign: logo || centered ? 'center' : undefined }}
       >
         {subtitle}
       </Typography.Paragraph>
@@ -97,12 +118,14 @@ function OverlaySide({
   text,
   button,
   logo,
+  items,
   onClick,
 }: {
   title: string
   text: string
   button: string
   logo?: boolean
+  items: OverlayItem[]
   onClick: () => void
 }) {
   return (
@@ -133,7 +156,41 @@ function OverlaySide({
       <h2 style={{ fontSize: 28, fontWeight: 600, margin: '0 0 12px', letterSpacing: '-0.02em' }}>
         {title}
       </h2>
-      <p style={{ margin: '0 0 24px', opacity: 0.9, lineHeight: 1.6 }}>{text}</p>
+      <p style={{ margin: '0 0 20px', opacity: 0.9, lineHeight: 1.55 }}>{text}</p>
+      <Flex vertical gap={10} style={{ margin: '0 0 28px' }}>
+        {items.map((item) => (
+          <Flex
+            key={item.label}
+            align="center"
+            gap={12}
+            style={{
+              padding: '10px 14px',
+              borderRadius: 14,
+              textAlign: 'left',
+              background: 'rgba(255,255,255,0.10)',
+              border: '1px solid rgba(255,255,255,0.18)',
+            }}
+          >
+            <span
+              style={{
+                flexShrink: 0,
+                width: 34,
+                height: 34,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: '50%',
+                background: 'rgba(255,255,255,0.16)',
+              }}
+            >
+              {item.icon}
+            </span>
+            <span style={{ fontSize: 14, fontWeight: 500, lineHeight: 1.3 }}>
+              {item.label}
+            </span>
+          </Flex>
+        ))}
+      </Flex>
       <Button
         ghost
         size="large"
@@ -191,6 +248,7 @@ export function AuthCardDesktop({ mode, onSwitch }: Props) {
         <FormWrap
           title="Создать сад"
           subtitle="Посадите первое дерево и выращивайте знания как живой сад."
+          centered
         >
           <SignUpForm />
         </FormWrap>
@@ -226,16 +284,18 @@ export function AuthCardDesktop({ mode, onSwitch }: Props) {
           {isSignIn ? (
             <OverlaySide
               title="Нет сада?"
-              text="Заведите свой сад знаний: осваивайте новое, укрепляйте основу и наблюдайте, как он растёт."
+              text="Заведите пространство, где знания растут:"
               button="Создать сад"
+              items={OFFER_ITEMS}
               onClick={() => onSwitch('signUp')}
             />
           ) : (
             <OverlaySide
               title="Уже есть сад?"
-              text="Возвращайтесь к своему саду и продолжайте его растить."
+              text="Возвращайтесь и продолжайте растить свой сад:"
               button="Войти"
               logo
+              items={ABOUT_ITEMS}
               onClick={() => onSwitch('signIn')}
             />
           )}
