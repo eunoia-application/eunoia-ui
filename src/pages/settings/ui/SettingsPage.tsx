@@ -1,17 +1,21 @@
-import { Card, Col, Flex, Row } from 'antd'
+import { Button, Card, Col, Flex, Row, theme, Typography } from 'antd'
+import { ArrowLeft } from 'lucide-react'
 import { useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 import { useUserStore } from '@entities/user'
-import { ChangePasswordForm } from '@features/change-password'
+import { DeleteAccountButton } from '@features/delete-account'
+import { ExportDataButton } from '@features/export-data'
+import { AvatarManager } from '@features/manage-avatar'
 import { ThemeToggle } from '@features/theme-toggle'
 import { ProfileForm } from '@features/update-profile'
+import { SettingsForm } from '@features/update-settings'
 import { ErrorRetry, FormSkeleton, PageHeader } from '@shared/ui'
 
-/**
- * Настройки аккаунта. Страница владеет загрузкой профиля (skeleton/retry),
- * а редактирование/смена пароля — отдельные features.
- */
+/** Настройки аккаунта: профиль, аватар, параметры, данные, опасная зона. */
 export function SettingsPage() {
+  const navigate = useNavigate()
+  const { token } = theme.useToken()
   const status = useUserStore((state) => state.status)
   const error = useUserStore((state) => state.error)
   const profile = useUserStore((state) => state.profile)
@@ -35,17 +39,51 @@ export function SettingsPage() {
     return (
       <Row gutter={[24, 24]}>
         <Col xs={24} lg={14}>
-          <Card title="Профиль" variant="borderless">
-            <ProfileForm />
-          </Card>
+          <Flex vertical gap={24}>
+            <Card title="Профиль" variant="borderless">
+              <Flex vertical gap={24}>
+                <AvatarManager />
+                <ProfileForm />
+              </Flex>
+            </Card>
+            <Card title="Настройки" variant="borderless">
+              <SettingsForm />
+            </Card>
+          </Flex>
         </Col>
+
         <Col xs={24} lg={10}>
           <Flex vertical gap={24}>
-            <Card title="Безопасность" variant="borderless">
-              <ChangePasswordForm />
-            </Card>
             <Card title="Внешний вид" variant="borderless">
-              <ThemeToggle />
+              <Flex vertical gap={12} align="flex-start">
+                <Typography.Text type="secondary">
+                  Быстрое переключение темы для этого устройства.
+                </Typography.Text>
+                <ThemeToggle />
+              </Flex>
+            </Card>
+
+            <Card title="Данные" variant="borderless">
+              <Flex vertical gap={12} align="flex-start">
+                <Typography.Text type="secondary">
+                  Скачайте копию своих данных в формате JSON.
+                </Typography.Text>
+                <ExportDataButton />
+              </Flex>
+            </Card>
+
+            <Card
+              title="Опасная зона"
+              variant="outlined"
+              style={{ borderColor: token.colorError }}
+              styles={{ header: { color: token.colorError } }}
+            >
+              <Flex vertical gap={12} align="flex-start">
+                <Typography.Text type="secondary">
+                  Удаление аккаунта необратимо — профиль и данные будут стёрты.
+                </Typography.Text>
+                <DeleteAccountButton />
+              </Flex>
             </Card>
           </Flex>
         </Col>
@@ -55,9 +93,17 @@ export function SettingsPage() {
 
   return (
     <>
+      <Button
+        type="text"
+        icon={<ArrowLeft size={16} />}
+        onClick={() => navigate(-1)}
+        style={{ marginBottom: 8, paddingInline: 0 }}
+      >
+        Назад
+      </Button>
       <PageHeader
         title="Настройки"
-        description="Управляйте профилем и параметрами аккаунта."
+        description="Профиль, аватар, параметры и данные аккаунта."
       />
       {renderBody()}
     </>

@@ -16,10 +16,10 @@ export function ProfileForm() {
 
   useEffect(() => {
     form.setFieldsValue({
-      firstName: profile?.firstName,
-      lastName: profile?.lastName,
-      bio: profile?.bio,
-      avatarUrl: profile?.avatarUrl,
+      // null с сервера → undefined, иначе zod .optional() отвергает null
+      firstName: profile?.firstName ?? undefined,
+      lastName: profile?.lastName ?? undefined,
+      bio: profile?.bio ?? undefined,
     })
   }, [profile, form])
 
@@ -55,10 +55,6 @@ export function ProfileForm() {
 
       <Form.Item name="bio" label="О себе">
         <Input.TextArea rows={3} maxLength={280} showCount placeholder="Пара слов о себе" />
-      </Form.Item>
-
-      <Form.Item name="avatarUrl" label="Ссылка на аватар">
-        <Input size="large" placeholder="https://…" inputMode="url" />
       </Form.Item>
 
       <Button type="primary" htmlType="submit" size="large" loading={loading}>
