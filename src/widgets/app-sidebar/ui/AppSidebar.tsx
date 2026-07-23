@@ -1,6 +1,6 @@
 import { Flex, Layout, Menu, Popover, theme, Typography } from 'antd'
 import type { MenuProps } from 'antd'
-import { LogOut, Settings, Sprout } from 'lucide-react'
+import { Leaf, LogOut, Settings, SpellCheck, Sprout } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
@@ -25,7 +25,11 @@ interface NavLink {
   label: string
 }
 
-const NAV: NavLink[] = [{ to: PATHS.home, icon: <Sprout size={18} />, label: 'Сад' }]
+const NAV: NavLink[] = [
+  { to: PATHS.home, icon: <Sprout size={18} />, label: 'Сад' },
+  { to: PATHS.words, icon: <Leaf size={18} />, label: 'Слова' },
+  { to: PATHS.grammar, icon: <SpellCheck size={18} />, label: 'Грамматика' },
+]
 
 /** Боковая навигация: лого, пользователь (меню справа), центрированные пункты. */
 export function AppSidebar({ collapsed, onCollapse }: AppSidebarProps) {

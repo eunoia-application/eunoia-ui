@@ -14,6 +14,12 @@ const AuthPage = lazy(() =>
 const HomePage = lazy(() =>
   import('@pages/home').then((m) => ({ default: m.HomePage })),
 )
+const WordsPage = lazy(() =>
+  import('@pages/words').then((m) => ({ default: m.WordsPage })),
+)
+const GrammarPage = lazy(() =>
+  import('@pages/grammar').then((m) => ({ default: m.GrammarPage })),
+)
 const SettingsPage = lazy(() =>
   import('@pages/settings').then((m) => ({ default: m.SettingsPage })),
 )
@@ -34,6 +40,8 @@ export function AppRoutes() {
         <Route element={<ProtectedRoute />}>
           <Route element={<AppLayout />}>
             <Route path={PATHS.home} element={<HomePage />} />
+            <Route path={PATHS.words} element={<WordsPage />} />
+            <Route path={PATHS.grammar} element={<GrammarPage />} />
             <Route path={PATHS.settings} element={<SettingsPage />} />
           </Route>
         </Route>
