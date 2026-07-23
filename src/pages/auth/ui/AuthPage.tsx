@@ -4,14 +4,16 @@ import { ThemeToggle } from '@features/theme-toggle'
 import { GardenBackground } from '@shared/ui'
 import { AuthCard } from '@widgets/auth-card'
 
-/** Страница авторизации: сад на фоне + плавающая карточка. */
+/** Страница авторизации: сад на фоне, переключатель темы в углу. Логотип — на карточке. */
 export function AuthPage() {
   return (
     <>
       <GardenBackground />
+
       <div style={{ position: 'fixed', top: 20, right: 20, zIndex: 3 }}>
         <ThemeToggle />
       </div>
+
       <Flex
         align="center"
         justify="center"

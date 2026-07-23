@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 
 import { useUserStore } from '@entities/user'
 import type { UserSettings } from '@shared/api'
+import { themePreferenceFromMode, useThemeStore } from '@shared/theme'
 
 /** Полный набор настроек с дефолтами (все обязательные поля контракта). */
 const DEFAULTS: UserSettings = {
@@ -13,7 +14,11 @@ const DEFAULTS: UserSettings = {
   aiSuggestionsEnabled: true,
 }
 
-/** Форма пользовательских настроек (PUT /users/me/settings). */
+/**
+ * Настройки аккаунта (PUT /users/me/settings). Тема здесь не дублируется —
+ * ею управляет переключатель «Внешний вид»; при сохранении форма подставляет
+ * текущую тему из стора, чтобы не затереть её на сервере.
+ */
 export function SettingsForm() {
   const [form] = Form.useForm()
   const settings = useUserStore((state) => state.profile?.settings)
@@ -27,7 +32,11 @@ export function SettingsForm() {
   const onFinish = async (values: UserSettings) => {
     setLoading(true)
     try {
-      await updateSettings({ ...DEFAULTS, ...values })
+      await updateSettings({
+        ...DEFAULTS,
+        ...values,
+        theme: themePreferenceFromMode(useThemeStore.getState().mode),
+      })
     } catch {
       /* уведомление показывает стор */
     } finally {
@@ -43,16 +52,6 @@ export function SettingsForm() {
       initialValues={DEFAULTS}
       onFinish={onFinish}
     >
-      <Form.Item name="theme" label="Тема">
-        <Select
-          options={[
-            { value: 'LIGHT', label: 'Светлая' },
-            { value: 'DARK', label: 'Тёмная' },
-            { value: 'AUTO', label: 'Системная' },
-          ]}
-        />
-      </Form.Item>
-
       <Form.Item name="interfaceLanguage" label="Язык интерфейса">
         <Select
           options={[

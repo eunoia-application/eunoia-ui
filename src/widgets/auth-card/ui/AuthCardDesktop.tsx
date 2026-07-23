@@ -4,6 +4,7 @@ import type { CSSProperties, ReactNode } from 'react'
 
 import { SignInForm } from '@features/auth-login'
 import { SignUpForm } from '@features/auth-register'
+import logoUrl from '@shared/assets/logo.png'
 import { brand, useResolvedTheme } from '@shared/theme'
 
 import {
@@ -42,14 +43,25 @@ const pane = (left: number | string): CSSProperties => ({
 function FormWrap({
   title,
   subtitle,
+  logo,
   children,
 }: {
   title: string
   subtitle: string
+  logo?: boolean
   children: ReactNode
 }) {
   return (
     <div style={{ width: '100%', maxWidth: 320 }}>
+      {logo && (
+        <img
+          src={logoUrl}
+          alt=""
+          width={52}
+          height={52}
+          style={{ objectFit: 'contain', display: 'block', marginBottom: 14 }}
+        />
+      )}
       <Typography.Title level={3} style={{ marginBottom: 8 }}>
         {title}
       </Typography.Title>
@@ -65,15 +77,40 @@ function OverlaySide({
   title,
   text,
   button,
+  logo,
   onClick,
 }: {
   title: string
   text: string
   button: string
+  logo?: boolean
   onClick: () => void
 }) {
   return (
     <div style={{ maxWidth: 300 }}>
+      {logo && (
+        <div
+          style={{
+            width: 72,
+            height: 72,
+            margin: '0 auto 20px',
+            borderRadius: '50%',
+            background: '#fff',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            boxShadow: '0 8px 20px rgba(0,0,0,0.18)',
+          }}
+        >
+          <img
+            src={logoUrl}
+            alt=""
+            width={48}
+            height={48}
+            style={{ objectFit: 'contain' }}
+          />
+        </div>
+      )}
       <h2 style={{ fontSize: 28, fontWeight: 600, margin: '0 0 12px', letterSpacing: '-0.02em' }}>
         {title}
       </h2>
@@ -119,6 +156,7 @@ export function AuthCardDesktop({ mode, onSwitch }: Props) {
         <FormWrap
           title="Вход в цифровой сад"
           subtitle="Продолжите развивать свои идеи и связи между заметками."
+          logo
         >
           <SignInForm />
         </FormWrap>
@@ -178,6 +216,7 @@ export function AuthCardDesktop({ mode, onSwitch }: Props) {
               title="Уже есть сад?"
               text="Вернитесь к своим заметкам и продолжайте развивать свою сеть знаний."
               button="Войти"
+              logo
               onClick={() => onSwitch('signIn')}
             />
           )}

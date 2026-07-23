@@ -2,6 +2,7 @@ import { Segmented, theme, Typography } from 'antd'
 
 import { SignInForm } from '@features/auth-login'
 import { SignUpForm } from '@features/auth-register'
+import logoUrl from '@shared/assets/logo.png'
 import { useResolvedTheme } from '@shared/theme'
 
 import type { AuthMode } from './AuthCard'
@@ -45,6 +46,13 @@ export function AuthCardMobile({ mode, onSwitch }: Props) {
         style={{ marginBottom: 20 }}
       />
 
+      <img
+        src={logoUrl}
+        alt=""
+        width={44}
+        height={44}
+        style={{ objectFit: 'contain', display: 'block', marginBottom: 12 }}
+      />
       <Typography.Title level={4} style={{ marginBottom: 4 }}>
         {isSignIn ? 'Вход в цифровой сад' : 'Создать сад'}
       </Typography.Title>

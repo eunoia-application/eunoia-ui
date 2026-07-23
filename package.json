@@ -27,13 +27,14 @@
     "lucide-react": "^0.468.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-easy-crop": "^6.2.2",
     "react-router-dom": "^6.28.1",
     "zod": "^3.24.1",
     "zustand": "^5.0.2"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",
-    "@eunoia-application/api-types": "^2.0.0",
+    "@eunoia-application/api-types": "^2.1.0",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.1",

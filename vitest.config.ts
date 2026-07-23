@@ -31,6 +31,8 @@ export default defineConfig({
         'src/shared/test/**',
         'src/shared/api/contracts/**',
         'src/entities/session/model/types.ts', // type-only, без рантайма
+        'src/features/manage-avatar/lib/cropImage.ts', // canvas, недоступен в jsdom
+        'src/features/manage-avatar/ui/AvatarCropModal.tsx', // react-easy-crop/DOM
         'src/app/main.tsx',
         'src/vite-env.d.ts',
       ],

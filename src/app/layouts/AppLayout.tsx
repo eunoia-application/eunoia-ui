@@ -4,17 +4,16 @@ import { Outlet } from 'react-router-dom'
 
 import { useUserStore } from '@entities/user'
 import { AppSidebar } from '@widgets/app-sidebar'
-import { AppTopbar } from '@widgets/app-topbar'
 
 const { Content } = Layout
 
-/** Оболочка авторизованной части: сайдбар + топбар + контент. */
+/** Оболочка авторизованной части: сайдбар (с пользователем) + контент. */
 export function AppLayout() {
   const [collapsed, setCollapsed] = useState(false)
   const profileLoaded = useUserStore((state) => state.profile !== null)
   const fetchProfile = useUserStore((state) => state.fetchProfile)
 
-  // Подгружаем полный профиль один раз для топбара (аватар/имя) и синка темы.
+  // Подгружаем полный профиль один раз (аватар/имя в сайдбаре, синк темы).
   useEffect(() => {
     if (!profileLoaded) void fetchProfile()
   }, [profileLoaded, fetchProfile])
@@ -23,7 +22,6 @@ export function AppLayout() {
     <Layout style={{ minHeight: '100vh' }}>
       <AppSidebar collapsed={collapsed} onCollapse={setCollapsed} />
       <Layout>
-        <AppTopbar />
         <Content
           style={{
             padding: 24,

@@ -62,7 +62,7 @@ export function GardenBackground() {
     const vh = window.innerHeight
     const greens = [brand.primary, brand.primaryHover, brand.primaryActive]
 
-    return Array.from({ length: 16 }, (_, i) => {
+    return Array.from({ length: 28 }, (_, i) => {
       const depth = Math.random()
       return {
         id: i,

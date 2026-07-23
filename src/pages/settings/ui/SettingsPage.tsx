@@ -1,5 +1,7 @@
-import { Card, Col, Flex, Row, theme, Typography } from 'antd'
+import { Button, Card, Col, Flex, Row, theme, Typography } from 'antd'
+import { ArrowLeft } from 'lucide-react'
 import { useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 import { useUserStore } from '@entities/user'
 import { DeleteAccountButton } from '@features/delete-account'
@@ -12,6 +14,7 @@ import { ErrorRetry, FormSkeleton, PageHeader } from '@shared/ui'
 
 /** Настройки аккаунта: профиль, аватар, параметры, данные, опасная зона. */
 export function SettingsPage() {
+  const navigate = useNavigate()
   const { token } = theme.useToken()
   const status = useUserStore((state) => state.status)
   const error = useUserStore((state) => state.error)
@@ -90,6 +93,14 @@ export function SettingsPage() {
 
   return (
     <>
+      <Button
+        type="text"
+        icon={<ArrowLeft size={16} />}
+        onClick={() => navigate(-1)}
+        style={{ marginBottom: 8, paddingInline: 0 }}
+      >
+        Назад
+      </Button>
       <PageHeader
         title="Настройки"
         description="Профиль, аватар, параметры и данные аккаунта."

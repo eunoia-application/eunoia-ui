@@ -44,4 +44,10 @@ describe('<SettingsPage>', () => {
     renderWithProviders(<SettingsPage />)
     expect(fetchProfile).toHaveBeenCalled()
   })
+
+  it('кнопка «Назад» не падает', async () => {
+    useUserStore.setState({ status: 'success', profile: makeProfile(), fetchProfile: vi.fn() })
+    renderWithProviders(<SettingsPage />)
+    await userEvent.click(screen.getByRole('button', { name: 'Назад' }))
+  })
 })
