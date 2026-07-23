@@ -3,7 +3,7 @@ import { Segmented, theme, Typography } from 'antd'
 import { SignInForm } from '@features/auth-login'
 import { SignUpForm } from '@features/auth-register'
 import logoUrl from '@shared/assets/logo.png'
-import { useResolvedTheme } from '@shared/theme'
+import { brand, useResolvedTheme } from '@shared/theme'
 
 import type { AuthMode } from './AuthCard'
 
@@ -46,20 +46,33 @@ export function AuthCardMobile({ mode, onSwitch }: Props) {
         style={{ marginBottom: 20 }}
       />
 
-      <img
-        src={logoUrl}
-        alt=""
-        width={44}
-        height={44}
-        style={{ objectFit: 'contain', display: 'block', marginBottom: 12 }}
-      />
-      <Typography.Title level={4} style={{ marginBottom: 4 }}>
+      <div
+        style={{
+          width: 64,
+          height: 64,
+          margin: '0 auto 14px',
+          borderRadius: '50%',
+          background: brand.primarySoft,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <img
+          src={logoUrl}
+          alt=""
+          width={42}
+          height={42}
+          style={{ objectFit: 'contain' }}
+        />
+      </div>
+      <Typography.Title level={4} style={{ marginBottom: 4, textAlign: 'center' }}>
         {isSignIn ? 'Вход в цифровой сад' : 'Создать сад'}
       </Typography.Title>
-      <Typography.Paragraph type="secondary" style={{ marginBottom: 20 }}>
+      <Typography.Paragraph type="secondary" style={{ marginBottom: 20, textAlign: 'center' }}>
         {isSignIn
-          ? 'Продолжите развивать свои идеи и связи между заметками.'
-          : 'Начните строить сеть связанных мыслей и знаний.'}
+          ? 'Возвращайтесь в сад — продолжайте растить свои знания.'
+          : 'Посадите первое дерево и выращивайте знания как живой сад.'}
       </Typography.Paragraph>
 
       {isSignIn ? <SignInForm /> : <SignUpForm />}

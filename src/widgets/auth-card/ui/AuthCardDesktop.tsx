@@ -54,18 +54,37 @@ function FormWrap({
   return (
     <div style={{ width: '100%', maxWidth: 320 }}>
       {logo && (
-        <img
-          src={logoUrl}
-          alt=""
-          width={52}
-          height={52}
-          style={{ objectFit: 'contain', display: 'block', marginBottom: 14 }}
-        />
+        <div
+          style={{
+            width: 72,
+            height: 72,
+            margin: '0 auto 18px',
+            borderRadius: '50%',
+            background: brand.primarySoft,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <img
+            src={logoUrl}
+            alt=""
+            width={48}
+            height={48}
+            style={{ objectFit: 'contain' }}
+          />
+        </div>
       )}
-      <Typography.Title level={3} style={{ marginBottom: 8 }}>
+      <Typography.Title
+        level={3}
+        style={{ marginBottom: 8, textAlign: logo ? 'center' : undefined }}
+      >
         {title}
       </Typography.Title>
-      <Typography.Paragraph type="secondary" style={{ marginBottom: 24 }}>
+      <Typography.Paragraph
+        type="secondary"
+        style={{ marginBottom: 24, textAlign: logo ? 'center' : undefined }}
+      >
         {subtitle}
       </Typography.Paragraph>
       {children}
@@ -155,7 +174,7 @@ export function AuthCardDesktop({ mode, onSwitch }: Props) {
       >
         <FormWrap
           title="Вход в цифровой сад"
-          subtitle="Продолжите развивать свои идеи и связи между заметками."
+          subtitle="Возвращайтесь в сад — продолжайте растить свои знания."
           logo
         >
           <SignInForm />
@@ -171,7 +190,7 @@ export function AuthCardDesktop({ mode, onSwitch }: Props) {
       >
         <FormWrap
           title="Создать сад"
-          subtitle="Начните строить сеть связанных мыслей и знаний."
+          subtitle="Посадите первое дерево и выращивайте знания как живой сад."
         >
           <SignUpForm />
         </FormWrap>
@@ -207,14 +226,14 @@ export function AuthCardDesktop({ mode, onSwitch }: Props) {
           {isSignIn ? (
             <OverlaySide
               title="Нет сада?"
-              text="Создайте пространство для своих идей и соединяйте мысли в единую сеть знаний."
+              text="Заведите свой сад знаний: осваивайте новое, укрепляйте основу и наблюдайте, как он растёт."
               button="Создать сад"
               onClick={() => onSwitch('signUp')}
             />
           ) : (
             <OverlaySide
               title="Уже есть сад?"
-              text="Вернитесь к своим заметкам и продолжайте развивать свою сеть знаний."
+              text="Возвращайтесь к своему саду и продолжайте его растить."
               button="Войти"
               logo
               onClick={() => onSwitch('signIn')}
