@@ -1,0 +1,64 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+# Отменяем старый прогон при пуше нового коммита в ту же ветку.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ci:
+    name: Typecheck + Lint + Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    # read:packages нужен для установки @eunoia-application/api-types из GitHub Packages.
+    permissions:
+      contents: read
+      packages: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        # registry-url + scope генерируют временный .npmrc с auth из NODE_AUTH_TOKEN,
+        # поэтому реальный токен НЕ коммитится в репозиторий (.npmrc в .gitignore).
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          registry-url: https://npm.pkg.github.com
+          scope: '@eunoia-application'
+
+      - name: Install dependencies
+        # Дефолтный GITHUB_TOKEN видит пакеты своей org (eunoia-application).
+        # Если репозиторий в другой org или нужен расширенный доступ — заведи
+        # secret OAS_READ_TOKEN (PAT c read:packages) и он подставится вместо него.
+        run: npm ci
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.OAS_READ_TOKEN || secrets.GITHUB_TOKEN }}
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint
+
+      # Тесты появятся вместе с vitest — тогда добавить шаг `npm test`.
+
+      - name: Build
+        run: npm run build
+
+      - name: Upload dist artifact
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+        uses: actions/upload-artifact@v4
+        with:
+          name: eunoia-ui-dist
+          path: dist/
+          retention-days: 7
+          if-no-files-found: error
