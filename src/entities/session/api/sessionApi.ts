@@ -26,4 +26,9 @@ export const sessionApi = {
   async logout(): Promise<void> {
     await httpClient.post('/auth/logout')
   },
+
+  /** Удаление аккаунта: профиль и данные удаляются асинхронно (204). */
+  async deleteAccount(): Promise<void> {
+    await httpClient.delete('/auth/account')
+  },
 }

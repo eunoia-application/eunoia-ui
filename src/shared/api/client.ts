@@ -11,7 +11,8 @@ import { attachInterceptors } from './interceptors'
 export const httpClient = axios.create({
   baseURL: env.apiBaseUrl,
   timeout: HTTP.timeoutMs,
-  headers: { 'Content-Type': 'application/json' },
+  // Content-Type не фиксируем: axios сам ставит application/json для объектов
+  // и multipart/form-data с boundary для FormData (загрузка аватара).
 })
 
 attachInterceptors(httpClient)

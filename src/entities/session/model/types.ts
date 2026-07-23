@@ -1,4 +1,4 @@
-import type { UserProfile } from '@shared/api'
+import type { AuthUser } from '@shared/api'
 
-/** Пользователь текущей сессии (алиас доменного профиля). */
-export type SessionUser = UserProfile
+/** Пользователь текущей сессии — слим-идентичность из ответа auth. */
+export type SessionUser = AuthUser

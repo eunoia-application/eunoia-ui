@@ -2,12 +2,13 @@
 
 Фронтенд продукта **Eunoia** — «сад знаний», где пользователь не проходит уроки,
 а *выращивает* свои знания. Языки — первый модуль (дерево растёт: слова-листья,
-темы-ветки, грамматика-ствол). Сейчас реализован фундамент (авторизация и
-профиль); визуализация сада — впереди, после доменного API.
+темы-ветки, грамматика-ствол). Реализованы авторизация и полный профиль
+пользователя; визуализация сада — впереди, после доменного API.
 
-> **Статус:** итерация 1 завершена — тулчейн, дизайн-система, авторизация,
-> профиль/настройки на реальном API. Садовая визуализация ждёт контракт под
-> новое направление.
+> **Статус:** фундамент готов — тулчейн, дизайн-система, авторизация и профиль
+> (аватар, настройки, экспорт данных, удаление аккаунта) на реальном API
+> (контракт 2.0.0), автотесты (~99.7% покрытие) и CI. Садовая визуализация ждёт
+> контракт под новое направление.
 
 ---
 
@@ -23,7 +24,8 @@
 | HTTP | Axios (единый инстанс + интерсепторы) |
 | Формы/валидация | Ant Design Form + Zod |
 | Анимации | Framer Motion |
-| Контракты API | `@eunoia-application/api-types` (OpenAPI → TS, GitHub Packages) |
+| Контракты API | `@eunoia-application/api-types` 2.0.0 (OpenAPI → TS, GitHub Packages) |
+| Тесты | Vitest + Testing Library + coverage v8 |
 
 ---
 
@@ -67,14 +69,16 @@ src/
 │  └─ styles/              # global.css
 ├─ pages/                   # auth · home · settings
 ├─ widgets/                 # app-sidebar · app-topbar · auth-card
-├─ features/                # auth-login · auth-register · auth-logout
-│                           # theme-toggle · update-profile · change-password
+├─ features/                # auth-login · auth-register · auth-logout · theme-toggle
+│                           # update-profile · update-settings · manage-avatar
+│                           # export-data · delete-account
 ├─ entities/                # session · user (Zustand + api + ui)
 └─ shared/
    ├─ api/                  # client, interceptors, authBridge, contracts (из npm-пакета)
    ├─ config/               # env, constants, routes (PATHS)
    ├─ lib/                  # hooks (debounce/media), format, notify, zod-хелперы
-   ├─ theme/                # токены, light/dark, themeStore, useResolvedTheme
+   ├─ test/                 # setup, renderWithProviders, фабрики данных
+   ├─ theme/                # токены, light/dark, themeStore, useResolvedTheme, mapper
    └─ ui/                   # DataStates (skeleton/empty/retry), PageHeader, GardenBackground
 ```
 
@@ -137,6 +141,9 @@ Origin `:9000` уже в CORS allow-list бэкенда (в проде — `CORS
 | `npm run preview` | Локальный предпросмотр собранного `dist`. |
 | `npm run lint` | ESLint (включая проверку FSD-границ). |
 | `npm run typecheck` | Проверка типов без эмита. |
+| `npm run test` | Прогон тестов (Vitest). |
+| `npm run test:watch` | Тесты в watch-режиме. |
+| `npm run test:cov` | Тесты + отчёт покрытия (v8). |
 
 ---
 
@@ -162,8 +169,9 @@ Origin `:9000` уже в CORS allow-list бэкенда (в проде — `CORS
 npm i @eunoia-application/api-types@latest
 ```
 
-> Текущая версия пакета покрывает **Auth** и **User**. Доменная модель
-> (Knowledge Garden) появится в следующих версиях контракта.
+> Контракт **2.0.0** покрывает Auth (slim `AuthUser` в ответе auth) и User
+> (полный профиль, аватар, настройки, экспорт данных). Доменная модель
+> Knowledge Garden (деревья/слова/граф) появится в следующих версиях.
 
 ### Тема
 
@@ -174,11 +182,31 @@ npm i @eunoia-application/api-types@latest
 
 ---
 
+## Тестирование
+
+- **Vitest + Testing Library** (jsdom), покрытие через `@vitest/coverage-v8`.
+- Тесты лежат рядом с кодом (`*.test.ts` / `*.test.tsx`).
+- Общая инфраструктура — в `shared/test`: `setup.ts` (jest-dom + заглушки
+  `matchMedia`/`ResizeObserver`), `renderWithProviders` (тема + antd `App` + роутер),
+  фабрики данных (`makeProfile`, `makeAuthResponse`, …).
+- Сеть не дёргается: api/сторы мокаются через `vi.mock` и `store.setState`.
+
+```bash
+npm run test        # разовый прогон
+npm run test:watch  # watch-режим
+npm run test:cov    # + покрытие (пороги: 99% строк/функций, 97% веток)
+```
+
+Текущее покрытие — ~99.7%. **CI** (GitHub Actions, `.github/workflows/ci.yml`)
+на каждый push/PR прогоняет `typecheck → lint → test:cov → build`.
+
+---
+
 ## Роадмап
 
-- [x] **Итерация 1** — тулчейн, дизайн-система (тема dark/light), авторизация
-      (вход/регистрация, «цифровой сад»), профиль и настройки на реальном
-      `/users/me`, интеграция пакета контрактов.
+- [x] **Фундамент** — тулчейн, дизайн-система (тема dark/light), авторизация
+      (вход/регистрация, «цифровой сад»), профиль на контракте 2.0.0 (аватар,
+      настройки, экспорт данных, удаление аккаунта), автотесты (~99.7%) и CI.
 - [ ] Новый контракт API под направление **Knowledge Garden** (языки: деревья,
       ветки-темы, листья-слова, граф языка).
 - [ ] Визуализация сада — дерево (SVG + Framer Motion) и граф языка (react-flow).
@@ -189,6 +217,6 @@ npm i @eunoia-application/api-types@latest
 ## Соглашения
 
 - Именование и стиль — как в окружающем коде; проза UI на русском.
-- Перед PR: `npm run typecheck && npm run lint && npm run build` — всё зелёное.
+- Перед PR: `npm run typecheck && npm run lint && npm run test && npm run build` — всё зелёное.
 - Не добавляйте моки данных: без бэкенда раздел показывает пустое/ошибочное
   состояние, а не выдуманные данные.

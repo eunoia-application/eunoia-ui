@@ -2,7 +2,7 @@ import { Dropdown, Flex, Layout, theme, Typography } from 'antd'
 import { LogOut } from 'lucide-react'
 
 import { useSessionStore } from '@entities/session'
-import { displayName, UserAvatar } from '@entities/user'
+import { displayName, UserAvatar, useUserStore } from '@entities/user'
 import { useLogout } from '@features/auth-logout'
 import { ThemeToggle } from '@features/theme-toggle'
 
@@ -11,7 +11,10 @@ const { Header } = Layout
 /** Верхняя панель: переключатель темы + меню пользователя. */
 export function AppTopbar() {
   const { token } = theme.useToken()
-  const user = useSessionStore((state) => state.user)
+  const sessionUser = useSessionStore((state) => state.user)
+  const profile = useUserStore((state) => state.profile)
+  // Полный профиль (с аватаром) приоритетнее слим-идентичности сессии.
+  const user = profile ?? sessionUser
   const logout = useLogout()
 
   return (

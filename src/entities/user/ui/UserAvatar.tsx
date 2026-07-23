@@ -1,13 +1,15 @@
 import { Avatar } from 'antd'
 import type { AvatarProps } from 'antd'
 
-import type { UserProfile } from '@shared/api'
 import { brand } from '@shared/theme'
 
 import { initials } from '../lib/displayName'
+import type { NamedUser } from '../lib/displayName'
+
+type AvatarUser = NamedUser & { avatarUrl?: string | null }
 
 interface UserAvatarProps {
-  user?: UserProfile | null
+  user?: AvatarUser | null
   size?: AvatarProps['size']
 }
 

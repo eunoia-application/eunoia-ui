@@ -4,10 +4,10 @@ import { persist } from 'zustand/middleware'
 import { isApiError } from '@shared/api'
 import type {
   AuthResponse,
+  AuthUser,
   LoginRequest,
   RegisterRequest,
   RequestStatus,
-  UserProfile,
 } from '@shared/api'
 import { STORAGE_KEYS } from '@shared/config'
 
@@ -16,7 +16,8 @@ import { sessionApi } from '../api/sessionApi'
 interface SessionState {
   accessToken: string | null
   refreshToken: string | null
-  user: UserProfile | null
+  /** Слим-идентичность (AuthUser). Полный профиль живёт в entities/user. */
+  user: AuthUser | null
   status: RequestStatus
   error: string | null
 
@@ -25,7 +26,9 @@ interface SessionState {
   logout: () => Promise<void>
   /** Возвращает новый access-токен или null (для authBridge). */
   refresh: () => Promise<string | null>
-  setUser: (user: UserProfile) => void
+  /** Удаляет аккаунт на сервере и очищает сессию. */
+  deleteAccount: () => Promise<void>
+  setUser: (user: AuthUser) => void
   clear: () => void
   isAuthenticated: () => boolean
 }
@@ -92,6 +95,11 @@ export const useSessionStore = create<SessionState>()(
           }
         },
 
+        deleteAccount: async () => {
+          await sessionApi.deleteAccount()
+          set({ ...initial })
+        },
+
         setUser: (user) => set({ user }),
         clear: () => set({ ...initial }),
         isAuthenticated: () => Boolean(get().accessToken),
@@ -99,7 +107,6 @@ export const useSessionStore = create<SessionState>()(
     },
     {
       name: STORAGE_KEYS.session,
-      // Персистим только данные, не статусы/ошибки.
       partialize: (state) => ({
         accessToken: state.accessToken,
         refreshToken: state.refreshToken,

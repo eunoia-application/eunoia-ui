@@ -58,8 +58,8 @@ export function GardenBackground() {
   const { token } = theme.useToken()
 
   const leaves = useMemo<LeafConfig[]>(() => {
-    const vw = typeof window !== 'undefined' ? window.innerWidth : 1280
-    const vh = typeof window !== 'undefined' ? window.innerHeight : 900
+    const vw = window.innerWidth
+    const vh = window.innerHeight
     const greens = [brand.primary, brand.primaryHover, brand.primaryActive]
 
     return Array.from({ length: 16 }, (_, i) => {

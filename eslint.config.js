@@ -19,7 +19,7 @@ const LAYER_RULES = [
 ]
 
 export default tseslint.config(
-  { ignores: ['dist', 'node_modules'] },
+  { ignores: ['dist', 'node_modules', 'coverage'] },
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
     files: ['**/*.{ts,tsx}'],
@@ -52,6 +52,15 @@ export default tseslint.config(
         'error',
         { default: 'disallow', rules: LAYER_RULES },
       ],
+    },
+  },
+  {
+    // Тесты и тест-утилиты: границы слоёв и any здесь не действуют.
+    files: ['**/*.test.{ts,tsx}', 'src/shared/test/**'],
+    rules: {
+      'boundaries/element-types': 'off',
+      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-non-null-assertion': 'off',
     },
   },
 )
