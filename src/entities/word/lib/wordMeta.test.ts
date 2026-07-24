@@ -2,12 +2,19 @@ import { describe, expect, it } from 'vitest'
 
 import { makeWordLeaf } from '@shared/test/factories'
 
-import { groupByTopic, POS_LABEL, POS_SHORT } from './wordMeta'
+import { groupByTopic, leafMeta, POS_LABEL, POS_SHORT } from './wordMeta'
 
 describe('wordMeta', () => {
   it('полные и короткие метки частей речи', () => {
     expect(POS_LABEL.VERB).toBe('глагол')
     expect(POS_SHORT.VERB).toBe('глаг.')
+  })
+
+  it('leafMeta собирает части речи и уровень', () => {
+    expect(leafMeta(makeWordLeaf({ pos: ['VERB', 'NOUN'], cefr: 'A1' }))).toBe(
+      'глаг., сущ. · A1',
+    )
+    expect(leafMeta(makeWordLeaf({ pos: undefined, cefr: undefined }))).toBe('')
   })
 
   it('группирует по первой теме', () => {

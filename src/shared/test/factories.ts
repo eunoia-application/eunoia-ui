@@ -4,6 +4,8 @@ import type {
   Band,
   GrammarView,
   MasteryView,
+  TopicRef,
+  TopicView,
   UserProfile,
   UserSettings,
   WordCard,
@@ -116,6 +118,14 @@ export function makeWordLeaf(over: Partial<WordLeaf> = {}): WordLeaf {
 
 export function makeWordPage(over: Partial<WordPage> = {}): WordPage {
   return { total: 1, offset: 0, limit: 60, words: [makeWordLeaf()], ...over }
+}
+
+export function makeTopicRef(over: Partial<TopicRef> = {}): TopicRef {
+  return { id: 't-travel', name: 'Путешествия', slug: 'travel', ...over }
+}
+
+export function makeTopicView(over: Partial<TopicView> = {}): TopicView {
+  return { topic: makeTopicRef(), words: [makeWordLeaf()], ...over }
 }
 
 export function makeBand(over: Partial<Band> = {}): Band {

@@ -2,11 +2,13 @@ import { Button, Flex, Layout, Popover, theme, Tooltip, Typography } from 'antd'
 import {
   ChevronsLeft,
   ChevronsRight,
+  GraduationCap,
   Leaf,
   LogOut,
   Settings,
   SpellCheck,
   Sprout,
+  Tags,
 } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { useState } from 'react'
@@ -35,7 +37,9 @@ interface NavLink {
 const NAV: NavLink[] = [
   { to: PATHS.home, icon: <Sprout size={18} />, label: 'Сад' },
   { to: PATHS.words, icon: <Leaf size={18} />, label: 'Слова' },
+  { to: PATHS.study, icon: <GraduationCap size={18} />, label: 'Учить' },
   { to: PATHS.grammar, icon: <SpellCheck size={18} />, label: 'Грамматика' },
+  { to: PATHS.topics, icon: <Tags size={18} />, label: 'Темы' },
 ]
 
 /** Боковая навигация: лого, карточка пользователя, разделы, садовый футер. */

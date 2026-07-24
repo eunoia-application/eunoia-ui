@@ -1,4 +1,4 @@
-import { Button, Card, Flex, theme, Typography } from 'antd'
+import { Button, Card, Flex, Typography } from 'antd'
 import { Leaf } from 'lucide-react'
 
 import {
@@ -7,10 +7,10 @@ import {
   resolveStatus,
   useMasteryStore,
 } from '@entities/mastery'
-import { groupByTopic, POS_SHORT } from '@entities/word'
+import { groupByTopic, leafMeta } from '@entities/word'
 import type { ApiError, RequestStatus, WordLeaf } from '@shared/api'
 import { brand } from '@shared/theme'
-import { CardSkeleton, EmptyState, ErrorRetry } from '@shared/ui'
+import { CardSkeleton, EmptyState, ErrorRetry, WordCard } from '@shared/ui'
 
 interface Props {
   words: WordLeaf[]
@@ -24,7 +24,6 @@ interface Props {
 
 /** Слова блока карточками, сгруппированные по темам (сироты → «Разное»). */
 export function WordList({ words, total, status, error, onOpen, onLoadMore, onRetry }: Props) {
-  const { token } = theme.useToken()
   const byId = useMasteryStore((state) => state.byId)
 
   if (status === 'loading' && !words.length) return <CardSkeleton rows={4} />
@@ -65,48 +64,15 @@ export function WordList({ words, total, status, error, onOpen, onLoadMore, onRe
                 gap: 10,
               }}
             >
-              {group.words.map((leaf) => {
-                const leafStatus = resolveStatus(leaf.id, leaf.status, byId)
-                const { color } = MASTERY_META[leafStatus]
-                const meta = [
-                  leaf.pos?.length ? leaf.pos.map((p) => POS_SHORT[p]).join(', ') : null,
-                  leaf.cefr,
-                ]
-                  .filter(Boolean)
-                  .join(' · ')
-                return (
-                  <button
-                    key={leaf.id}
-                    type="button"
-                    className="eunoia-word-card"
-                    onClick={() => onOpen(leaf.id)}
-                    style={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: 4,
-                      textAlign: 'left',
-                      padding: '11px 13px',
-                      borderRadius: 12,
-                      cursor: 'pointer',
-                      font: 'inherit',
-                      color: 'inherit',
-                      background: token.colorFillQuaternary,
-                      border: `1px solid ${token.colorBorderSecondary}`,
-                      borderLeft: `3px solid ${color}`,
-                    }}
-                  >
-                    <Flex align="center" justify="space-between" gap={8}>
-                      <span style={{ fontWeight: 600 }}>{leaf.lemma}</span>
-                      <Leaf size={13} color={color} />
-                    </Flex>
-                    {meta ? (
-                      <Typography.Text type="secondary" style={{ fontSize: 11 }}>
-                        {meta}
-                      </Typography.Text>
-                    ) : null}
-                  </button>
-                )
-              })}
+              {group.words.map((leaf) => (
+                <WordCard
+                  key={leaf.id}
+                  leaf={leaf}
+                  color={MASTERY_META[resolveStatus(leaf.id, leaf.status, byId)].color}
+                  meta={leafMeta(leaf)}
+                  onOpen={onOpen}
+                />
+              ))}
             </div>
           </div>
         ))}

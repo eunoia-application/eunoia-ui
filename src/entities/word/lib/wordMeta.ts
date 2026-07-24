@@ -30,6 +30,16 @@ export const POS_SHORT: Record<PartOfSpeech, string> = {
   OTHER: '—',
 }
 
+/** Подпись слова для карточки: части речи + уровень («глаг., сущ. · A1»). */
+export function leafMeta(leaf: WordLeaf): string {
+  return [
+    leaf.pos?.length ? leaf.pos.map((p) => POS_SHORT[p]).join(', ') : null,
+    leaf.cefr,
+  ]
+    .filter(Boolean)
+    .join(' · ')
+}
+
 const MISC_TOPIC = 'Разное'
 
 export interface TopicGroup {
