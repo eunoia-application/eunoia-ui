@@ -4,6 +4,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import { useSessionStore } from '@entities/session'
 import { useUserStore } from '@entities/user'
+import { APP } from '@shared/config'
 import { makeAuthUser, makeProfile } from '@shared/test/factories'
 import { renderWithProviders } from '@shared/test/render'
 
@@ -53,6 +54,15 @@ describe('<AppSidebar>', () => {
     expect(screen.getByText('Выйти')).toBeInTheDocument()
   })
 
+  it('меню профиля — премиум-шапка с email', async () => {
+    withUser()
+    renderWithProviders(<AppSidebar collapsed={false} onCollapse={vi.fn()} />)
+    await userEvent.click(screen.getByText('Alex Johnson'))
+    await screen.findByText('Настройки')
+    // email виден и в карточке сайдбара, и в шапке открытого меню
+    expect(screen.getAllByText('user@example.com').length).toBeGreaterThanOrEqual(2)
+  })
+
   it('«Настройки» из меню пользователя не падает', async () => {
     withUser()
     renderWithProviders(<AppSidebar collapsed={false} onCollapse={vi.fn()} />)
@@ -73,5 +83,26 @@ describe('<AppSidebar>', () => {
   it('collapsed скрывает текстовые подписи', () => {
     renderWithProviders(<AppSidebar collapsed onCollapse={vi.fn()} />)
     expect(screen.queryByText('Eunoia')).toBeNull()
+  })
+
+  it('карточка пользователя показывает email', () => {
+    withUser()
+    renderWithProviders(<AppSidebar collapsed={false} onCollapse={vi.fn()} />)
+    expect(screen.getByText('user@example.com')).toBeInTheDocument()
+  })
+
+  it('футер: версия и сворачивание', async () => {
+    const onCollapse = vi.fn()
+    renderWithProviders(<AppSidebar collapsed={false} onCollapse={onCollapse} />)
+    expect(screen.getByText(`v${APP.version}`)).toBeInTheDocument()
+    await userEvent.click(screen.getByRole('button', { name: 'Свернуть меню' }))
+    expect(onCollapse).toHaveBeenCalledWith(true)
+  })
+
+  it('collapsed: кнопка разворачивает меню', async () => {
+    const onCollapse = vi.fn()
+    renderWithProviders(<AppSidebar collapsed onCollapse={onCollapse} />)
+    await userEvent.click(screen.getByRole('button', { name: 'Развернуть меню' }))
+    expect(onCollapse).toHaveBeenCalledWith(false)
   })
 })

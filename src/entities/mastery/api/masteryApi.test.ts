@@ -16,16 +16,20 @@ afterEach(() => Object.values(h).forEach((f) => f.mockReset()))
 
 describe('masteryApi', () => {
   it('getMine', async () => {
-    h.get.mockResolvedValue({ data: [{ lexemeId: 'en:go:VERB', status: 'KNOWN' }] })
+    h.get.mockResolvedValue({ data: [{ wordId: 'en:go', status: 'KNOWN' }] })
     await expect(masteryApi.getMine()).resolves.toHaveLength(1)
     expect(h.get).toHaveBeenCalledWith('/learning/mastery')
   })
 
-  it('setStatus шлёт { status } на закодированный id', async () => {
-    h.put.mockResolvedValue({ data: { lexemeId: 'en:go:VERB', status: 'LEARNING' } })
-    await masteryApi.setStatus('en:go:VERB', 'LEARNING')
-    expect(h.put).toHaveBeenCalledWith('/learning/mastery/en%3Ago%3AVERB', {
-      status: 'LEARNING',
-    })
+  it('setStatus шлёт { status } на закодированный id-лемму', async () => {
+    h.put.mockResolvedValue({ data: { wordId: 'en:go', status: 'LEARNING' } })
+    await masteryApi.setStatus('en:go', 'LEARNING')
+    expect(h.put).toHaveBeenCalledWith('/learning/mastery/en%3Ago', { status: 'LEARNING' })
+  })
+
+  it('getStudy — очередь «Учить»', async () => {
+    h.get.mockResolvedValue({ data: [{ id: 'en:go', lemma: 'go', status: 'LEARNING' }] })
+    await expect(masteryApi.getStudy()).resolves.toHaveLength(1)
+    expect(h.get).toHaveBeenCalledWith('/learning/study')
   })
 })
