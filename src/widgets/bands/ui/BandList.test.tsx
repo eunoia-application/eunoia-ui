@@ -71,4 +71,15 @@ describe('<BandList>', () => {
     await userEvent.click(screen.getByText('Блок 500'))
     expect(onSelect).toHaveBeenCalledWith('top-500')
   })
+
+  it('полностью освоенный блок помечен «Освоено»', () => {
+    renderWithProviders(
+      <BandList
+        {...base}
+        status="success"
+        bands={[makeBand({ known: 100, learning: 0, total: 100 })]}
+      />,
+    )
+    expect(screen.getByText('Освоено')).toBeInTheDocument()
+  })
 })

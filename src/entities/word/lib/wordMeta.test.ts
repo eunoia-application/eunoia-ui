@@ -20,6 +20,15 @@ describe('wordMeta', () => {
     expect(groups[0].words).toHaveLength(2)
   })
 
+  it('крупные темы идут выше мелких', () => {
+    const groups = groupByTopic([
+      makeWordLeaf({ id: 'a', topics: [{ id: 't1', name: 'Малая' }] }),
+      makeWordLeaf({ id: 'b', topics: [{ id: 't2', name: 'Крупная' }] }),
+      makeWordLeaf({ id: 'c', topics: [{ id: 't2', name: 'Крупная' }] }),
+    ])
+    expect(groups.map((g) => g.name)).toEqual(['Крупная', 'Малая'])
+  })
+
   it('слова-сироты уходят в «Разное» в конец', () => {
     const groups = groupByTopic([
       makeWordLeaf({ id: 'x', topics: [] }),

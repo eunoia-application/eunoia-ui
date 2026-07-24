@@ -52,9 +52,11 @@ export function groupByTopic(words: WordLeaf[]): TopicGroup[] {
     }
     map.get(name)?.push(word)
   }
-  const names = [
-    ...order.filter((n) => n !== MISC_TOPIC),
-    ...(map.has(MISC_TOPIC) ? [MISC_TOPIC] : []),
-  ]
+  // Крупные темы наверх, «Разное» всегда последним — иначе список рвётся
+  // на десятки заголовков-однословок.
+  const named = order
+    .filter((n) => n !== MISC_TOPIC)
+    .sort((a, b) => (map.get(b)?.length ?? 0) - (map.get(a)?.length ?? 0))
+  const names = [...named, ...(map.has(MISC_TOPIC) ? [MISC_TOPIC] : [])]
   return names.map((name) => ({ name, words: map.get(name) ?? [] }))
 }

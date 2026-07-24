@@ -94,7 +94,7 @@ describe('<WordModal>', () => {
             freqRank: null,
             translations: [],
             forms: [],
-            synonyms: [],
+            synonyms: undefined,
             antonyms: [],
             hypernyms: [],
           }),

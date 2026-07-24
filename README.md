@@ -1,14 +1,14 @@
 # Eunoia — Knowledge Garden UI
 
 Фронтенд продукта **Eunoia** — «сад знаний», где пользователь не проходит уроки,
-а *выращивает* свои знания. Языки — первый модуль (дерево растёт: слова-листья,
-темы-ветки, грамматика-ствол). Реализованы авторизация и полный профиль
-пользователя; визуализация сада — впереди, после доменного API.
+а *выращивает* свои знания. Языки — первый модуль: словарь растёт блоками по
+частотности, слова-листья раскрашиваются по владению, грамматика — ствол.
 
-> **Статус:** фундамент готов — тулчейн, дизайн-система, авторизация и профиль
-> (аватар, настройки, экспорт данных, удаление аккаунта) на реальном API
-> (контракт 2.0.0), автотесты (~99.7% покрытие) и CI. Садовая визуализация ждёт
-> контракт под новое направление.
+> **Статус:** работают авторизация, полный профиль и **учебное ядро** на контракте
+> **3.1.0** — разделы «Слова» (блоки топ-слов → слова по темам → карточка слова с
+> вариантами по частям речи, отметки «Знаю/Учить») и «Грамматика» (ствол по CEFR,
+> правила с предпосылками и словами-примерами). Автотесты (~99.7% покрытие) и CI.
+> Впереди — раздел «Учить» (`/study`), навигация по темам и визуализация Сада.
 
 ---
 
@@ -24,7 +24,7 @@
 | HTTP | Axios (единый инстанс + интерсепторы) |
 | Формы/валидация | Ant Design Form + Zod |
 | Анимации | Framer Motion |
-| Контракты API | `@eunoia-application/api-types` 2.0.0 (OpenAPI → TS, GitHub Packages) |
+| Контракты API | `@eunoia-application/api-types` 3.1.0 (OpenAPI → TS, GitHub Packages) |
 | Тесты | Vitest + Testing Library + coverage v8 |
 
 ---
@@ -40,18 +40,18 @@ app       → композиция: провайдеры, роутер, layouts,
   ▲
 pages     → тонкие роут-композиции (собирают виджеты).
   ▲
-widgets   → самодостаточные блоки UI (сайдбар, топбар, карточка авторизации).
+widgets   → самодостаточные блоки UI (сайдбар, карточка авторизации, блоки/слова/карточки).
   ▲
-features  → пользовательские действия (вход, регистрация, смена темы, апдейт профиля).
+features  → пользовательские действия (вход, поиск слова, отметка владения, апдейт профиля).
   ▲
-entities  → бизнес-сущности (session, user): model + api + ui + lib.
+entities  → бизнес-сущности (session, user, word, band, mastery, grammar): model + api + lib.
   ▲
 shared    → инфраструктура без знания домена: axios-клиент, UI-kit, тема, хуки.
 ```
 
 **Ключевые правила проекта**
 
-- Компонент ≤ 150–200 строк; логика выносится в `model/`-хуки, колонки таблиц — в `config/`.
+- Компонент ≤ 150–200 строк; логика выносится в `model/`-хуки/сторы.
 - **API-логика только в `entities/*/api`** поверх `shared/api/client`; UI дёргает экшены стора, а не Axios напрямую.
 - `shared` не знает про домен. Токен/refresh в интерсептор попадают через **инверсию зависимостей** (`shared/api/authBridge`), а не импортом `entities` в `shared`.
 
@@ -65,17 +65,18 @@ src/
 │  ├─ main.tsx              # точка входа (setupZodRu + bindSessionToApi + render)
 │  ├─ providers/           # AppProviders, ThemeProvider, NotifyBridge
 │  ├─ router/              # AppRoutes, ProtectedRoute / GuestOnly, RouteFallback
-│  ├─ layouts/             # AppLayout (сайдбар + топбар + контент)
+│  ├─ layouts/             # AppLayout (sticky-сайдбар + контент)
 │  └─ styles/              # global.css
-├─ pages/                   # auth · home · settings
-├─ widgets/                 # app-sidebar · app-topbar · auth-card
+├─ pages/                   # auth · home (Сад) · words (Слова) · grammar (Грамматика) · settings
+├─ widgets/                 # app-sidebar · auth-card · progress-hero
+│                           # bands · words · word-modal · grammar · grammar-modal
 ├─ features/                # auth-login · auth-register · auth-logout · theme-toggle
 │                           # update-profile · update-settings · manage-avatar
-│                           # export-data · delete-account
-├─ entities/                # session · user (Zustand + api + ui)
+│                           # export-data · delete-account · search-words · set-mastery
+├─ entities/                # session · user · word · band · mastery · grammar
 └─ shared/
    ├─ api/                  # client, interceptors, authBridge, contracts (из npm-пакета)
-   ├─ config/               # env, constants, routes (PATHS)
+   ├─ config/               # env, constants (APP), routes (PATHS)
    ├─ lib/                  # hooks (debounce/media), format, notify, zod-хелперы
    ├─ test/                 # setup, renderWithProviders, фабрики данных
    ├─ theme/                # токены, light/dark, themeStore, useResolvedTheme, mapper
@@ -127,8 +128,8 @@ Dev-сервер (`vite.config.ts`) проксирует `/api/*` → `http://lo
 `http://localhost:7777/api/v1/auth/login` — база бэкенда `:7777/api/v1`.
 Origin `:9000` уже в CORS allow-list бэкенда (в проде — `CORS_ALLOWED_ORIGINS`).
 
-> Без запущенного бэкенда UI работает, но авторизация вернёт сетевую ошибку —
-> это ожидаемо (моков в проекте намеренно нет).
+> Без запущенного бэкенда UI работает, но защищённые разделы вернут сетевую
+> ошибку — это ожидаемо (моков в проекте намеренно нет).
 
 ---
 
@@ -158,6 +159,25 @@ Origin `:9000` уже в CORS allow-list бэкенда (в проде — `CORS
   зависимостей), поэтому `shared` не зависит от `entities`.
 - Сессия (`entities/session`) хранит токены и пользователя в Zustand с persist.
 
+### Учебное ядро (`/learning/*`)
+
+Единица обучения — **слово-лемма** (`en:go`); части речи живут внутри слова как
+`variants`. Навигация — **блоки топ-слов** по частотности.
+
+- `entities/band` — `GET /learning/bands`: уровни (Топ-100 … 5001–10000) с
+  прогрессом `known/learning/total`.
+- `entities/word` — карточка (`GET /learning/words/{id}` → `variants` по частям
+  речи), поиск (`/search`), список блока с пагинацией (`/words?band=…`);
+  `groupByTopic` раскладывает слова по темам (сироты → «Разное», крупные темы выше).
+- `entities/mastery` — отметки владения по `wordId` (`KNOWN`/`LEARNING`), очередь
+  «Учить» (`/study`). Клик красит слово оптимистично, при ошибке — откат и тост.
+- `entities/grammar` — ствол: `GET /learning/grammar` (правила по CEFR с
+  `prerequisites`), деталь правила со словами-примерами.
+
+Разделы «Слова» и «Грамматика» — единый «дашборд»-вид: hero-обзор прогресса
+(кольцо + разбивка), блоки/уровни с кольцевым прогрессом, слова и правила
+карточками, карточка-слово и правило — центрированные премиум-модалки.
+
 ### Контракты (типы API)
 
 Типы реэкспортятся из пакета в `shared/api/contracts/index.ts`
@@ -169,9 +189,8 @@ Origin `:9000` уже в CORS allow-list бэкенда (в проде — `CORS
 npm i @eunoia-application/api-types@latest
 ```
 
-> Контракт **2.0.0** покрывает Auth (slim `AuthUser` в ответе auth) и User
-> (полный профиль, аватар, настройки, экспорт данных). Доменная модель
-> Knowledge Garden (деревья/слова/граф) появится в следующих версиях.
+> Контракт **3.1.0** покрывает Auth (slim `AuthUser`), User (профиль, аватар,
+> настройки, экспорт) и Learning (слова/блоки/темы/грамматика/мастерство).
 
 ### Тема
 
@@ -188,7 +207,7 @@ npm i @eunoia-application/api-types@latest
 - Тесты лежат рядом с кодом (`*.test.ts` / `*.test.tsx`).
 - Общая инфраструктура — в `shared/test`: `setup.ts` (jest-dom + заглушки
   `matchMedia`/`ResizeObserver`), `renderWithProviders` (тема + antd `App` + роутер),
-  фабрики данных (`makeProfile`, `makeAuthResponse`, …).
+  фабрики данных (`makeWordCard`, `makeBand`, `makeGrammarView`, `makeProfile`, …).
 - Сеть не дёргается: api/сторы мокаются через `vi.mock` и `store.setState`.
 
 ```bash
@@ -197,19 +216,22 @@ npm run test:watch  # watch-режим
 npm run test:cov    # + покрытие (пороги: 99% строк/функций, 97% веток)
 ```
 
-Текущее покрытие — ~99.7%. **CI** (GitHub Actions, `.github/workflows/ci.yml`)
-на каждый push/PR прогоняет `typecheck → lint → test:cov → build`.
+Текущее покрытие — ~99.7% (333 теста). **CI** (GitHub Actions,
+`.github/workflows/ci.yml`) на каждый push/PR прогоняет
+`typecheck → lint → test:cov → build`.
 
 ---
 
 ## Роадмап
 
 - [x] **Фундамент** — тулчейн, дизайн-система (тема dark/light), авторизация
-      (вход/регистрация, «цифровой сад»), профиль на контракте 2.0.0 (аватар,
-      настройки, экспорт данных, удаление аккаунта), автотесты (~99.7%) и CI.
-- [ ] Новый контракт API под направление **Knowledge Garden** (языки: деревья,
-      ветки-темы, листья-слова, граф языка).
-- [ ] Визуализация сада — дерево (SVG + Framer Motion) и граф языка (react-flow).
+      («цифровой сад»), профиль (аватар, настройки, экспорт данных, удаление аккаунта).
+- [x] **Учебное ядро** на контракте 3.1.0 — «Слова» (блоки топ-слов → слова по
+      темам → карточка с вариантами, отметки «Знаю/Учить») и «Грамматика» (ствол
+      по CEFR, правила с предпосылками и словами-примерами); премиум-раскладка.
+- [ ] Раздел **«Учить»** (`/study` — очередь на повторение).
+- [ ] Навигация по **темам** (`/topics`).
+- [ ] Визуализация **Сада** — дерево (SVG + Framer Motion) и граф языка.
 - [ ] AI-наставник, механика «увядания» листьев (spaced repetition), сезоны.
 
 ---

@@ -7,6 +7,7 @@ import { useWordStore } from '@entities/word'
 import { WordSearch } from '@features/search-words'
 import { PageHeader } from '@shared/ui'
 import { BandList } from '@widgets/bands'
+import { ProgressHero } from '@widgets/progress-hero'
 import { WordModal } from '@widgets/word-modal'
 import { WordList } from '@widgets/words'
 
@@ -47,6 +48,8 @@ export function WordsPage() {
       />
 
       <Flex vertical gap={20}>
+        <ProgressHero bands={bands} status={bandsStatus} />
+
         <WordSearch onPick={setOpenWordId} />
 
         <BandList

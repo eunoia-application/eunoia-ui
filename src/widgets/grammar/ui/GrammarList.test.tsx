@@ -51,12 +51,14 @@ describe('<GrammarList>', () => {
         rules={[
           makeGrammarView({ id: 'a1', name: 'Present Simple', cefr: 'A1', prerequisites: [] }),
           makeGrammarView({ id: 'a2', name: 'Past Simple', cefr: 'A2' }),
+          makeGrammarView({ id: 'x', name: 'Без уровня-правило', cefr: undefined, prerequisites: [] }),
         ]}
         onOpen={onOpen}
       />,
     )
     expect(screen.getByText('A1')).toBeInTheDocument()
     expect(screen.getByText('A2')).toBeInTheDocument()
+    expect(screen.getByText('Без уровня')).toBeInTheDocument()
     // у Past Simple есть предпосылка — показываем счётчик
     expect(screen.getByText('сначала: 1')).toBeInTheDocument()
 

@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react'
 
 import { useGrammarStore } from '@entities/grammar'
+import { Flex } from 'antd'
+
 import { PageHeader } from '@shared/ui'
-import { GrammarList } from '@widgets/grammar'
+import { GrammarHero, GrammarList } from '@widgets/grammar'
 import { GrammarModal } from '@widgets/grammar-modal'
 import { WordModal } from '@widgets/word-modal'
 
@@ -27,14 +29,18 @@ export function GrammarPage() {
         description="Ствол сада: конструкции по уровням, от простого к сложному."
       />
 
-      <GrammarList
-        rules={rules}
-        status={listStatus}
-        error={listError}
-        activeId={openRuleId}
-        onOpen={setOpenRuleId}
-        onRetry={() => void fetchAll()}
-      />
+      <Flex vertical gap={20}>
+        <GrammarHero rules={rules} status={listStatus} />
+
+        <GrammarList
+          rules={rules}
+          status={listStatus}
+          error={listError}
+          activeId={openRuleId}
+          onOpen={setOpenRuleId}
+          onRetry={() => void fetchAll()}
+        />
+      </Flex>
 
       <GrammarModal
         ruleId={openRuleId}

@@ -60,6 +60,19 @@ body {
   background-color: rgba(47, 111, 79, 0.07);
 }
 
+/* Карточки-блоки и карточки-слова: мягкий подъём на ховере */
+.eunoia-band-card,
+.eunoia-word-card {
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+.eunoia-band-card:hover {
+  transform: translateY(-2px);
+}
+.eunoia-word-card:hover {
+  transform: translateY(-1px);
+  border-color: rgba(47, 111, 79, 0.45) !important;
+}
+
 /* Строки премиум-меню профиля */
 .eunoia-menu-row {
   transition: background-color 0.15s ease;

@@ -1,4 +1,4 @@
-import { Button, Card, Flex, Typography } from 'antd'
+import { Button, Card, Flex, theme, Typography } from 'antd'
 import { Leaf } from 'lucide-react'
 
 import {
@@ -9,6 +9,7 @@ import {
 } from '@entities/mastery'
 import { groupByTopic, POS_SHORT } from '@entities/word'
 import type { ApiError, RequestStatus, WordLeaf } from '@shared/api'
+import { brand } from '@shared/theme'
 import { CardSkeleton, EmptyState, ErrorRetry } from '@shared/ui'
 
 interface Props {
@@ -21,8 +22,9 @@ interface Props {
   onRetry: () => void
 }
 
-/** Слова блока, сгруппированные по темам (сироты → «Разное») + догрузка. */
+/** Слова блока карточками, сгруппированные по темам (сироты → «Разное»). */
 export function WordList({ words, total, status, error, onOpen, onLoadMore, onRetry }: Props) {
+  const { token } = theme.useToken()
   const byId = useMasteryStore((state) => state.byId)
 
   if (status === 'loading' && !words.length) return <CardSkeleton rows={4} />
@@ -45,53 +47,67 @@ export function WordList({ words, total, status, error, onOpen, onLoadMore, onRe
 
   return (
     <Card variant="borderless">
-      <Flex vertical gap={22}>
+      <Flex vertical gap={24}>
         {groups.map((group) => (
           <div key={group.name}>
-            <Typography.Text
+            <Flex align="center" gap={8} style={{ marginBottom: 12 }}>
+              <Leaf size={15} color={brand.primary} />
+              <Typography.Text strong>{group.name}</Typography.Text>
+              <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+                {group.words.length}
+              </Typography.Text>
+            </Flex>
+
+            <div
               style={{
-                fontSize: 11,
-                fontWeight: 600,
-                letterSpacing: '0.06em',
-                textTransform: 'uppercase',
-                color: MASTERY_META.UNKNOWN.color,
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))',
+                gap: 10,
               }}
             >
-              {group.name}
-            </Typography.Text>
-            <Flex wrap gap={8} style={{ marginTop: 10 }}>
               {group.words.map((leaf) => {
                 const leafStatus = resolveStatus(leaf.id, leaf.status, byId)
                 const { color } = MASTERY_META[leafStatus]
+                const meta = [
+                  leaf.pos?.length ? leaf.pos.map((p) => POS_SHORT[p]).join(', ') : null,
+                  leaf.cefr,
+                ]
+                  .filter(Boolean)
+                  .join(' · ')
                 return (
                   <button
                     key={leaf.id}
                     type="button"
+                    className="eunoia-word-card"
                     onClick={() => onOpen(leaf.id)}
                     style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: 8,
-                      padding: '7px 14px',
-                      borderRadius: 999,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: 4,
+                      textAlign: 'left',
+                      padding: '11px 13px',
+                      borderRadius: 12,
                       cursor: 'pointer',
                       font: 'inherit',
                       color: 'inherit',
-                      background: `${color}1A`,
-                      border: `1px solid ${color}55`,
+                      background: token.colorFillQuaternary,
+                      border: `1px solid ${token.colorBorderSecondary}`,
+                      borderLeft: `3px solid ${color}`,
                     }}
                   >
-                    <Leaf size={14} color={color} />
-                    <span style={{ fontWeight: 500 }}>{leaf.lemma}</span>
-                    {leaf.pos?.length ? (
+                    <Flex align="center" justify="space-between" gap={8}>
+                      <span style={{ fontWeight: 600 }}>{leaf.lemma}</span>
+                      <Leaf size={13} color={color} />
+                    </Flex>
+                    {meta ? (
                       <Typography.Text type="secondary" style={{ fontSize: 11 }}>
-                        {leaf.pos.map((p) => POS_SHORT[p]).join(', ')}
+                        {meta}
                       </Typography.Text>
                     ) : null}
                   </button>
                 )
               })}
-            </Flex>
+            </div>
           </div>
         ))}
 
