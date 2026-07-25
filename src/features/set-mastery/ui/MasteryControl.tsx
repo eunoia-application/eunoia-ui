@@ -1,5 +1,6 @@
 import { Button, Flex } from 'antd'
 
+import { useBandStore } from '@entities/band'
 import { MASTERY_ACTIONS, MASTERY_META, useMasteryStore } from '@entities/mastery'
 import type { MasteryStatus } from '@shared/api'
 
@@ -12,11 +13,15 @@ interface Props {
 /** Отметка владения: две кнопки «Знаю / Учить». Повтор по активной — снять. */
 export function MasteryControl({ wordId, status, size = 'middle' }: Props) {
   const setStatus = useMasteryStore((state) => state.setStatus)
+  const refreshBands = useBandStore((state) => state.fetchBands)
 
   const choose = (action: MasteryStatus) => {
     const next: MasteryStatus = status === action ? 'UNKNOWN' : action
     // Ошибку стор уже показал тостом и откатил — здесь глушим reject.
-    void setStatus(wordId, next).catch(() => undefined)
+    // После успеха обновляем счётчики блоков — дерево на Саде перерисовывается.
+    void setStatus(wordId, next)
+      .then(() => refreshBands())
+      .catch(() => undefined)
   }
 
   return (

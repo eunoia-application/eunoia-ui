@@ -37,7 +37,7 @@ describe('<GardenTree>', () => {
 
     const { container } = renderWithProviders(
       <GardenTree
-        bands={[makeBand({ id: 'top-100', label: 'Топ-100', known: 42, total: 100 })]}
+        bands={[makeBand({ id: 'top-100', label: 'Топ-100', known: 5000, total: 5864 })]}
         byId={{}}
         onSelectWord={onSelectWord}
         loadBandWords={loadBandWords}
@@ -61,7 +61,7 @@ describe('<GardenTree>', () => {
 
   it('вне кроны тултипа нет, увод курсора его скрывает', async () => {
     const { container } = renderWithProviders(
-      <GardenTree bands={[makeBand({ label: 'Топ-100' })]} byId={{}} />,
+      <GardenTree bands={[makeBand({ label: 'Топ-100', known: 5000, total: 5864 })]} byId={{}} />,
     )
     const canvas = await mountedCanvas(container)
 

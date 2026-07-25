@@ -14,7 +14,14 @@ vi.mock('pixi.js', () => {
     alpha = 1
     rotation = 0
     blendMode = ''
+    visible = true
+    clear() {
+      return this
+    }
     moveTo() {
+      return this
+    }
+    lineTo() {
       return this
     }
     bezierCurveTo() {
@@ -38,6 +45,11 @@ vi.mock('pixi.js', () => {
   }
   class Container {
     scale = { set: () => {} }
+    position = { set: () => {} }
+    pivot = { set: () => {} }
+    rotation = 0
+    alpha = 1
+    visible = true
     addChild() {}
   }
   class Application {
