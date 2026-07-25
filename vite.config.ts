@@ -45,6 +45,9 @@ export default defineConfig({
           )
             return 'react'
           if (id.includes('framer-motion') || id.includes('/motion/')) return 'motion'
+          // PixiJS импортится только динамически (Сад) — отдельный ленивый чанк.
+          if (id.includes('pixi.js') || id.includes('/pixi/') || id.includes('@pixi'))
+            return 'pixi'
           return 'vendor'
         },
       },
