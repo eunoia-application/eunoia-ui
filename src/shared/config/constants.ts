@@ -1,3 +1,9 @@
+/** Идентификация приложения (версия синхронна с package.json). */
+export const APP = {
+  name: 'Eunoia',
+  version: '0.1.0',
+} as const
+
 /** Ключи для persist в localStorage. Префикс — чтобы не конфликтовать с чужими. */
 export const STORAGE_KEYS = {
   session: 'eunoia.session',

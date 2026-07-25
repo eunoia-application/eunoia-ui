@@ -1,5 +1,5 @@
 export { env } from './env'
 export type { AppEnv } from './env'
-export { STORAGE_KEYS, HTTP, QUERY } from './constants'
+export { APP, STORAGE_KEYS, HTTP, QUERY } from './constants'
 export { PATHS } from './routes'
 export type { AppPath } from './routes'
