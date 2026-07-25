@@ -33,7 +33,8 @@ export default defineConfig({
         'src/entities/session/model/types.ts', // type-only, без рантайма
         'src/features/manage-avatar/lib/cropImage.ts', // canvas, недоступен в jsdom
         'src/features/manage-avatar/ui/AvatarCropModal.tsx', // react-easy-crop/DOM
-        'src/widgets/garden-tree/ui/GardenTree.tsx', // PixiJS/WebGL, недоступен в jsdom
+        'src/widgets/garden-tree/ui/scene/**', // R3F/WebGL-сцена, недоступна в jsdom
+        'src/app/router/__GardenLab.tsx', // ВРЕМЕННАЯ dev-песочница дерева
         'src/app/main.tsx',
         'src/vite-env.d.ts',
       ],

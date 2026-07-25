@@ -29,6 +29,8 @@ const TopicsPage = lazy(() =>
 const SettingsPage = lazy(() =>
   import('@pages/settings').then((m) => ({ default: m.SettingsPage })),
 )
+// ВРЕМЕННО: dev-песочница дерева (не коммитить).
+const GardenLab = lazy(() => import('./__GardenLab'))
 
 export function AppRoutes() {
   return (
@@ -53,6 +55,8 @@ export function AppRoutes() {
             <Route path={PATHS.settings} element={<SettingsPage />} />
           </Route>
         </Route>
+
+        {import.meta.env.DEV ? <Route path="/__garden-lab" element={<GardenLab />} /> : null}
 
         <Route path="*" element={<Navigate to={PATHS.home} replace />} />
       </Routes>

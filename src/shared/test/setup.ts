@@ -1,67 +1,7 @@
 import '@testing-library/jest-dom/vitest'
 
 import { cleanup } from '@testing-library/react'
-import { afterEach, vi } from 'vitest'
-
-// PixiJS требует WebGL-канвас, которого нет в jsdom. Для тестов заглушаем
-// движок безобидными no-op двойниками — сам рендер дерева проверяется вживую.
-vi.mock('pixi.js', () => {
-  class Graphics {
-    position = { set: () => {} }
-    scale = { set: () => {} }
-    filters: unknown[] = []
-    tint = 0
-    alpha = 1
-    rotation = 0
-    blendMode = ''
-    visible = true
-    clear() {
-      return this
-    }
-    moveTo() {
-      return this
-    }
-    lineTo() {
-      return this
-    }
-    bezierCurveTo() {
-      return this
-    }
-    quadraticCurveTo() {
-      return this
-    }
-    closePath() {
-      return this
-    }
-    ellipse() {
-      return this
-    }
-    fill() {
-      return this
-    }
-    stroke() {
-      return this
-    }
-  }
-  class Container {
-    scale = { set: () => {} }
-    position = { set: () => {} }
-    pivot = { set: () => {} }
-    rotation = 0
-    alpha = 1
-    visible = true
-    addChild() {}
-  }
-  class Application {
-    stage = new Container()
-    ticker = { add: () => {}, remove: () => {} }
-    canvas = document.createElement('canvas')
-    async init() {}
-    destroy() {}
-  }
-  class BlurFilter {}
-  return { Application, Container, Graphics, BlurFilter }
-})
+import { afterEach } from 'vitest'
 
 afterEach(() => {
   cleanup()
